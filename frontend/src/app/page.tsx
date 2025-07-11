@@ -8,7 +8,7 @@ export default function Home() {
     age: '',
     income: '',
     dependents: '',
-    riskTolerance: 'Medium',
+    riskTolerance: '',
   });
 
   const [result, setResult] = useState<{ recommendation: string; explanation: string } | null>(null);
@@ -19,24 +19,67 @@ export default function Home() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await axios.post('http://localhost:4000/recommendation', form);
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/recommendation`, form);
     setResult(res.data);
+
+    // Reset form fields
+    setForm({
+      age: '',
+      income: '',
+      dependents: '',
+      riskTolerance: '',
+    });
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-2xl font-bold mb-4">Life Insurance Recommendation</h1>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <input name="age" type="number" placeholder="Age" onChange={handleChange} className="input" required />
-          <input name="income" type="number" placeholder="Income" onChange={handleChange} className="input" required />
-          <input name="dependents" type="number" placeholder="Dependents" onChange={handleChange} className="input" required />
-          <select name="riskTolerance" onChange={handleChange} className="input">
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="age"
+            type="number"
+            placeholder="Age"
+            value={form.age}
+            onChange={handleChange}
+            className="input"
+            required
+          />
+          <input
+            name="income"
+            type="number"
+            placeholder="Income"
+            value={form.income}
+            onChange={handleChange}
+            className="input"
+            required
+          />
+          <input
+            name="dependents"
+            type="number"
+            placeholder="Dependents"
+            value={form.dependents}
+            onChange={handleChange}
+            className="input"
+            required
+          />
+          <select
+            name="riskTolerance"
+            value={form.riskTolerance}
+            onChange={handleChange}
+            className="input"
+            required
+          >
+            <option value="" disabled>
+              Select Risk Tolerance
+            </option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
           </select>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">Get Recommendation</button>
+          <button className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700 transition">
+            Get Recommendation
+          </button>
         </form>
         {result && (
           <div className="mt-4 bg-green-50 p-3 rounded">
